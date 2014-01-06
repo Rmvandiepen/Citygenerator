@@ -14,9 +14,9 @@ package
 	public class Main extends Sprite 
 	{
 		public static var roadArray:Array = [];
-		public static const MIN_ROAD_LENGTH:int = 50;
-		public static const NUM_ROAD_STEPS:int = 2;
-		public static const MAX_ROAD_LENGTH:int = 100;
+		public static const MIN_ROAD_LENGTH:int = 5;
+		public static const NUM_ROAD_STEPS:int = 3;
+		public static const MAX_ROAD_LENGTH:int = 20;
 		public static const SIZE:int = 300;
 		
 		private var fullMap:Sprite = new Sprite();
@@ -55,7 +55,7 @@ package
 			
 			generateNew();
 		}
-		private function createRoad2(key:String)
+		private function createRoad2(key:String):void
 		{
 			var curAngle:int = 0;
 			var curX:int = 400
@@ -145,6 +145,55 @@ package
 		{
 			environment = new Environment();
 			fullMap.addChild(environment);
+			var point:Point = getCityPos();
+			var city:City = new City(point.x, point.y, environment);
+			fullMap.addChild(city);
+			cities.push(city);
+		}
+		private function getCityPos():Point
+		{
+			trace("GetCityPos");
+			var checkDist:int = 15;
+			var checkDistMax:int = Math.sqrt(2 * Math.pow(checkDist, 2));
+			var landscape:Array = environment.landscape;
+			var highestPoint:Point;
+			var highestPointPoints:int = 0;
+			for (var i:int = 0; i < environment.numPxWidth; i+=1) 
+			{
+				for (var j:int = 0; j < environment.numPxHeight; j+=1) 
+				{
+					if ((landscape[i][j] as Tile).type == 1)
+					{
+						var points:int = 0;
+						for (var k:int = -checkDist; k <= checkDist; k++) 
+						{
+							for (var l:int = -checkDist; l <= checkDist; l++) 
+							{
+								if (i + k < 0 || j + l < 0 || i + k >= environment.numPxWidth || j + l >= environment.numPxHeight)
+								{
+									continue;
+								}
+								if ((landscape[i+k][j+l] as Tile).type == 1)
+								{
+									points += checkDistMax - Math.sqrt(Math.pow(k, 2) + Math.pow(l, 2));
+									//trace("grass", checkDistMax - Math.sqrt(Math.pow(k, 2) + Math.pow(l, 2)));
+								}
+								else
+								{
+									points += Math.sqrt(Math.pow(k, 2) + Math.pow(l, 2));
+									//trace("wate5r", Math.sqrt(Math.pow(k, 2) + Math.pow(l, 2)));
+								}
+							}
+						}
+						if (points > highestPointPoints)
+						{
+							highestPoint = new Point(i, j);
+							highestPointPoints = points;
+						}
+					}
+				}
+			}
+			return new Point(highestPoint.x * environment.pxWidth, highestPoint.y * environment.pxHeight);
 		}
 		private function onMouseClick(e:MouseEvent):void 
 		{
