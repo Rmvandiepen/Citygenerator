@@ -11,7 +11,7 @@ package
 	{
 		private var _environment:Environment;
 		
-		private var _roads:Array;
+		public var _roads:Array;
 		
 		//keyboardvars
 		private var _frame:int = 0;
@@ -25,6 +25,8 @@ package
 			this._roads = new Array();
 			this._environment = environment;
 			this._cityStartPoint = cityStart;
+			
+			init();
 		}
 		
 		public function cleanCity():void
@@ -36,9 +38,13 @@ package
 			this._roads = new Array();
 		}
 		
-		private function init()
+		private function init():void
 		{
+			var road:Road2 = new Road2(this._cityStartPoint, this);
 			
+			this.addChild(road);
+			
+			this._roads.push(road);
 		}
 		
 		private function update(e:Event):void

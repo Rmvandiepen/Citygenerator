@@ -149,6 +149,10 @@ package
 			var city:City = new City(point.x, point.y, environment);
 			fullMap.addChild(city);
 			cities.push(city);
+			
+			var city:City2 = new City2(new Point(300, 300), environment);
+			
+			fullMap.addChild(city);
 		}
 		private function getCityPos():Point
 		{
