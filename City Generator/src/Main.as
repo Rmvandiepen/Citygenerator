@@ -145,6 +145,10 @@ package
 		{
 			environment = new Environment();
 			fullMap.addChild(environment);
+			
+			var city:City2 = new City2(new Point(300, 300), environment);
+			
+			fullMap.addChild(city);
 		}
 		private function onMouseClick(e:MouseEvent):void 
 		{
