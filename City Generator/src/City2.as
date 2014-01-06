@@ -1,6 +1,7 @@
 package  
 {
 	import flash.display.Sprite;
+	import flash.events.Event;
 	import flash.geom.Point;
 	/**
 	 * ...
@@ -24,6 +25,25 @@ package
 			this._roads = new Array();
 			this._environment = environment;
 			this._cityStartPoint = cityStart;
+		}
+		
+		public function cleanCity():void
+		{
+			this.removeEventListener(Event.ENTER_FRAME, update);
+			
+			for (var i:int = 0; i < _roads.length; i++) _roads.pop();
+			
+			this._roads = new Array();
+		}
+		
+		private function init()
+		{
+			
+		}
+		
+		private function update(e:Event):void
+		{
+			
 		}
 		
 	}

@@ -11,6 +11,7 @@ package
 		private var _roadParts:Array;
 		private var _roadStart:Point;
 		private var _roadAge:int = 0;
+		public var roadActive = true;
 		
 		public function Road2(startPosition:Point) 
 		{
@@ -32,6 +33,22 @@ package
 			this.graphics.endFill();
 			
 			this._roadAge += 1;
+			
+			roadActive = calculateRoadEnded();
+		}
+		
+		private function calculateRoadEnded():Boolean
+		{
+			var randomInt:int = (int)(Math.random() * 100);
+			
+			return (85 > (randomInt - (150 / this._roadAge))); 
+		}
+		
+		public function calculateRoadSplit():Boolean
+		{
+			var randomInt:int = (int)(Math.random() * 100);
+			
+			return (75 < (randomInt - (10 * this._roadAge)));
 		}
 		
 		public function getRoadAge():int
