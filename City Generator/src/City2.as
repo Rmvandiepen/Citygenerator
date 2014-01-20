@@ -19,7 +19,7 @@ package
 		private var _superSpeed:int = 1;
 		private var _started:Boolean = false;
 		private var _cityStartPoint:Point;
-		private var _secondaryRoadsStarted = false;
+		private var _secondaryRoadsStarted:Boolean = false;
 		
 		public function City2(cityStart:Point, environment:Environment) 
 		{

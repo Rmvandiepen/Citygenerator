@@ -13,9 +13,9 @@ package
 		private var _roadStart:Point;
 		private var _roadAge:int = 0;
 		private var _angle:int = 0;
-		public var roadActive = true;
+		public var roadActive:Boolean = true;
 		private var _parent:City2;
-		private var size:int = 800;
+		private var size:int = 2000;
 		
 		private var frame:int = 0;
 		private var frames:int = 1;
@@ -35,7 +35,7 @@ package
 			this.addEventListener(Event.ENTER_FRAME, update);
 		}
 		
-		public function drawNextPart(nextPosition:Point)
+		public function drawNextPart(nextPosition:Point):void
 		{
 			var lastPoint:Point;
 			lastPoint = _roadParts[_roadParts.length - 1];
@@ -64,7 +64,7 @@ package
 			}
 		}
 		
-		public function update(e:Event)
+		public function update(e:Event):void
 		{
 			if (frame >= frames)
 			{	
@@ -118,7 +118,7 @@ package
 			var newx:int = position.x + Math.sin(angle * Math.PI / 180) * roadMaxLength;
 			var newy:int = position.y + Math.cos(angle * Math.PI / 180) * roadMaxLength;
 			
-			if (!calculateMakeTurn)
+			if (!calculateMakeTurn())
 				return new Point(newx, newy);
 			
 			var allowedDir:Array = [];
