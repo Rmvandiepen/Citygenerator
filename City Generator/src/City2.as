@@ -19,12 +19,16 @@ package
 		private var _superSpeed:int = 1;
 		private var _started:Boolean = false;
 		private var _cityStartPoint:Point;
+		private var _secondaryRoadsStarted = false;
 		
 		public function City2(cityStart:Point, environment:Environment) 
 		{
 			this._roads = new Array();
 			this._environment = environment;
+			
 			this._cityStartPoint = cityStart;
+			
+			this.addEventListener(Event.ENTER_FRAME, update);
 			
 			init();
 		}
@@ -40,7 +44,7 @@ package
 		
 		private function init():void
 		{
-			var road:Road2 = new Road2(this._cityStartPoint, this);
+			var road:MainRoad = new MainRoad(this._cityStartPoint, 90,  this);
 			
 			this.addChild(road);
 			
@@ -49,7 +53,19 @@ package
 		
 		private function update(e:Event):void
 		{
+			var roadActiveCount:int = 0;
+			for each (var road:MainRoad in this._roads)
+			{
+				if(road.roadActive)
+					roadActiveCount += 1; 
+			}
 			
+			if (roadActiveCount == 0 && _secondaryRoadsStarted == false)
+			{
+				_secondaryRoadsStarted = true;
+			}
+			
+			trace("roads active:" + roadActiveCount);
 		}
 		
 	}
