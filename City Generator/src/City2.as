@@ -19,6 +19,7 @@ package
 		private var _superSpeed:int = 1;
 		private var _started:Boolean = false;
 		private var _cityStartPoint:Point;
+		private var _secondaryRoadsStarted = false;
 		
 		public function City2(cityStart:Point, environment:Environment) 
 		{
@@ -57,6 +58,11 @@ package
 			{
 				if(road.roadActive)
 					roadActiveCount += 1; 
+			}
+			
+			if (roadActiveCount == 0 && _secondaryRoadsStarted == false)
+			{
+				_secondaryRoadsStarted = true;
 			}
 			
 			trace("roads active:" + roadActiveCount);
