@@ -24,6 +24,7 @@ package
 		{
 			this._roads = new Array();
 			this._environment = environment;
+			
 			this._cityStartPoint = cityStart;
 			
 			this.addEventListener(Event.ENTER_FRAME, update);
@@ -42,7 +43,7 @@ package
 		
 		private function init():void
 		{
-			var road:Road2 = new Road2(this._cityStartPoint, 90,  this);
+			var road:MainRoad = new MainRoad(this._cityStartPoint, 90,  this);
 			
 			this.addChild(road);
 			
@@ -52,7 +53,7 @@ package
 		private function update(e:Event):void
 		{
 			var roadActiveCount:int = 0;
-			for each (var road:Road2 in this._roads)
+			for each (var road:MainRoad in this._roads)
 			{
 				if(road.roadActive)
 					roadActiveCount += 1; 

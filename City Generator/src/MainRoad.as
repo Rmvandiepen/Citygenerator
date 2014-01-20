@@ -7,7 +7,7 @@ package
 	 * ...
 	 * @author Hugo
 	 */
-	public class Road2 extends Sprite
+	public class MainRoad extends Sprite
 	{
 		private var _roadParts:Array;
 		private var _roadStart:Point;
@@ -15,14 +15,14 @@ package
 		private var _angle:int = 0;
 		public var roadActive = true;
 		private var _parent:City2;
-		private var size:int = 400;
+		private var size:int = 800;
 		
 		private var frame:int = 0;
 		private var frames:int = 1;
 		
 		private const roadMaxLength:int = 10;
 		
-		public function Road2(startPosition:Point, angle:int, parent:City2) 
+		public function MainRoad(startPosition:Point, angle:int, parent:City2) 
 		{
 			_roadParts = new Array();
 			_roadStart = startPosition;
@@ -59,7 +59,7 @@ package
 			{
 				trace("split");
 				var randomAngle:int = 0;
-				_parent._roads.push(new Road2(nextPosition, randomAngle, _parent));
+				_parent._roads.push(new MainRoad(nextPosition, randomAngle, _parent));
 				_parent.addChild(_parent._roads[_parent._roads.length - 1]);
 			}
 		}
@@ -87,7 +87,7 @@ package
 		{
 			var randomInt:int = (int)(Math.random() * 100);
 			
-			return (80 > (randomInt - (120 / this._roadAge))); 
+			return (85 > (randomInt - (120 / this._roadAge)));
 		}
 		
 		public function calculateRoadSplit():Boolean
