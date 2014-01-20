@@ -13,7 +13,8 @@ package
 		private var _endX:int;
 		private var _endY:int;
 		public var reachedMax:Boolean = false;
-	public function Road(x:int, y:int, angle:int, maxLength:int, procFromCenter:Number)
+		
+		public function Road(x:int, y:int, angle:int, maxLength:int, procFromCenter:Number)
 		{
 			this.x = x;
 			this.y = y;
@@ -31,7 +32,19 @@ package
 			this.graphics.lineTo(_endX, _endY);
 			this.graphics.endFill();
 		}
-		
+		public function fromEndPoint(x:int, y:int, endX:int, endY:int):void
+		{
+			this.graphics.clear();
+			
+			this.x = x;
+			this.y = y;
+			_endX = endX;
+			_endY = endY;
+			this.graphics.beginFill(0x00ff00, 1);
+			this.graphics.lineStyle(1, 0x000000);
+			this.graphics.lineTo(_endX, _endY);
+			this.graphics.endFill();
+		}
 		public function endPoint():Point
 		{
 			return new Point(this.x + _endX, this.y + _endY);

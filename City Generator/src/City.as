@@ -213,11 +213,6 @@ package
 					}
 				}
 			}
-			var string:String = "dirs:";
-			for (var j:int = 0; j < allowedDir.length; j++) 
-			{
-				string += allowedDir[j] + ", ";
-			}
 			
 			if (!road.reachedMax && _makeMoreRoads)
 			{

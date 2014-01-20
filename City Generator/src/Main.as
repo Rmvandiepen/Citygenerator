@@ -17,7 +17,7 @@ package
 		public static const MIN_ROAD_LENGTH:int = 5;
 		public static const NUM_ROAD_STEPS:int = 3;
 		public static const MAX_ROAD_LENGTH:int = 20;
-		public static const SIZE:int = 300;
+		public static const SIZE:int = 450;
 		
 		private var fullMap:Sprite = new Sprite();
 		private var environment:Environment;
@@ -31,7 +31,8 @@ package
 		private var buildingCities:Boolean = false;
 		
 		private var type:int = 0;
-		
+		private var pointOne:Point;
+		private var pointTwo:Point;
 		public function Main():void 
 		{
 			if (stage) init();
@@ -145,21 +146,120 @@ package
 		{
 			environment = new Environment();
 			fullMap.addChild(environment);
-			var point:Point = getCityPos();
-			var city:City = new City(point.x, point.y, environment);
-			fullMap.addChild(city);
-			cities.push(city);
-			
-			var city:City2 = new City2(new Point(300, 300), environment);
-			
-			fullMap.addChild(city);
+			var bestPlaces:Array = getCityPos();
+			for (var i:int = 0; i < bestPlaces.length; i++) 
+			{
+				trace("x:", bestPlaces[i].x, ", y:", bestPlaces[i].y, ", points:", bestPlaces[i].point);
+				var city:City = new City(bestPlaces[i].x * 30 + 15, bestPlaces[i].y * 30 + 15, environment);
+				fullMap.addChild(city);
+				cities.push(city);
+				if (i > 0)
+				{
+					findPath(bestPlaces[i - 1].x, bestPlaces[i - 1].y, bestPlaces[i].x, bestPlaces[i].y);
+				}
+				else
+				{
+					findPath(bestPlaces[2].x, bestPlaces[2].y, bestPlaces[i].x, bestPlaces[i].y);
+				}
+			}
+			//var city:City2 = new City2(new Point(300, 300), environment);
+			//
+			//fullMap.addChild(city);
 		}
-		private function getCityPos():Point
+		private var path:Object;
+		private function findPath(startx:int, starty:int, targetx:int, targety:int):Boolean
+		{
+			path={};
+			path.Unchecked_Neighbours=[];
+			path.done = false;
+			path.name="node_"+starty+"_"+startx;
+			path[path.name]={x:startx, y:starty, visited:false, parentx:null, parenty:null};
+			path.Unchecked_Neighbours[path.Unchecked_Neighbours.length]=path[path.name];
+			while (path.Unchecked_Neighbours.length > 0) 
+			{
+				var N:Object = path.Unchecked_Neighbours.shift();
+				if (N.x == targetx && N.y == targety) 
+				{
+					make_path(N);
+					path.done = true;
+					break;
+				}
+				else 
+				{
+					N.visited = true;
+					addNode (N, N.x, N.y-1);
+					addNode (N, N.x+1, N.y);
+					addNode (N, N.x-1, N.y);
+					addNode (N, N.x, N.y+1);
+					addNode (N, N.x-1, N.y-1);
+					addNode (N, N.x+1, N.y-1);
+					addNode (N, N.x-1, N.y+1);
+					addNode (N, N.x+1, N.y+1);
+				}
+			}
+			//delete path;
+			if (path.done) 
+			{
+				return true;
+			}
+			else 
+			{
+				return false;
+			}
+		}
+		private function addNode(parent:Object, x:int, y:int):void
+		{
+			path.name = "node_" + y + "_" + x;
+			if (x < 50 && y < 50 && x >= 0 && y >= 0)
+			{
+				var tile:Tile = environment.landscape[x][y];
+				if (tile.type == 1)
+				{
+					if (path[path.name] == null || path[path.name].visited == false) 
+					{
+						path[path.name]={x:x, y:y, visited:true, parentx:parent.x, parenty:parent.y};
+						path.Unchecked_Neighbours[path.Unchecked_Neighbours.length]= path[path.name];
+					}
+				}
+			}
+		}
+		private function make_path(node:Object):void
+		{
+			var nextNode:Object
+			var startRoad:Point;
+			var endRoad:Point;
+			while (node.parentx != null)
+			{
+				startRoad = new Point(node.x * 30 + 15, node.y * 30 + 15);
+				nextNode = path["node_" + node.parenty + "_" + node.parentx];
+				var difX:int = nextNode.x - node.x;
+				var difY:int = nextNode.y - node.y;
+				if (nextNode)
+				{
+					while (nextNode.x - node.x == difX && nextNode.y - node.y == difY)
+					{
+						node = nextNode;
+						if (nextNode.parentx != null)
+						{
+							nextNode = path["node_" + nextNode.parenty + "_" + nextNode.parentx];
+						}
+					}
+				}
+				endRoad = new Point(node.x * 30 + 15, node.y * 30 + 15);
+				var road:Road = new Road(0, 0, 90, 30, 10);
+				road.fromEndPoint(startRoad.x, startRoad.y, endRoad.x - startRoad.x, endRoad.y - startRoad.y);
+				environment.addChild(road);
+				Main.roadArray.push(road);
+			}
+			//move char
+		}
+		private function getCityPos():Array
 		{
 			trace("GetCityPos");
 			var checkDist:int = 15;
 			var checkDistMax:int = Math.sqrt(2 * Math.pow(checkDist, 2));
 			var landscape:Array = environment.landscape;
+			var highestPoints:Array = [];
 			var highestPoint:Point;
 			var highestPointPoints:int = 0;
 			for (var i:int = 0; i < environment.numPxWidth; i+=1) 
@@ -189,21 +289,44 @@ package
 								}
 							}
 						}
-						if (points > highestPointPoints)
+						if (highestPoints.length < 3)
 						{
-							highestPoint = new Point(i, j);
-							highestPointPoints = points;
+							highestPoints.push( { x:i, y:j, point:points } );
+							highestPoints.sortOn("point", Array.DESCENDING);
+						}
+						else
+						{
+							if (points > highestPoints[2].point)
+							{
+								highestPoints[2] = { x:i, y:j, point:points };
+								highestPoints.sortOn("point", Array.DESCENDING);
+							}
 						}
 					}
 				}
 			}
-			return new Point(highestPoint.x * environment.pxWidth, highestPoint.y * environment.pxHeight);
+			return highestPoints;
 		}
 		private function onMouseClick(e:MouseEvent):void 
 		{
-			var city:City = new City((e.stageX - e.stageX % 10 - fullMap.x) / fullMap.scaleX, (e.stageY - e.stageY % 10 - fullMap.y) / fullMap.scaleY, environment);
-			fullMap.addChild(city);
-			cities.push(city);
+			if (!pointOne)
+			{
+				pointOne = new Point((int)((e.stageX - e.stageX % 10 - fullMap.x) / fullMap.scaleX / 30), (int)((e.stageY - e.stageY % 10 - fullMap.y) / fullMap.scaleY / 30));
+			}
+			else if(!pointTwo)
+			{
+				pointTwo = new Point((int)((e.stageX - e.stageX % 10 - fullMap.x) / fullMap.scaleX / 30), (int)((e.stageY - e.stageY % 10 - fullMap.y) / fullMap.scaleY / 30));
+				trace("Path from:", pointOne, "To:", pointTwo);
+				trace(findPath(pointOne.x, pointOne.y, pointTwo.x, pointTwo.y));
+			}
+			else
+			{
+				pointOne = new Point((int)((e.stageX - e.stageX % 10 - fullMap.x) / fullMap.scaleX / 30), (int)((e.stageY - e.stageY % 10 - fullMap.y) / fullMap.scaleY / 30));
+				pointTwo = null;
+			}
+			//var city:City = new City((e.stageX - e.stageX % 10 - fullMap.x) / fullMap.scaleX, (e.stageY - e.stageY % 10 - fullMap.y) / fullMap.scaleY, environment);
+			//fullMap.addChild(city);
+			//cities.push(city);
 		}
 		private function onKeyDown(e:KeyboardEvent):void
 		{
